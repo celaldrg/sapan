@@ -1,0 +1,11 @@
+{
+  "name": "sapan",
+  "version": "1.0.0",
+  "description": "A physics slingshot game: launch stones at a crumbling castle full of slime goblins. Vanilla JS, Matter.js, no build step.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "MIT"
+}

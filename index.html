@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sapan: slingshot castle game</title>
+  <meta name="description" content="Sapan is a free physics slingshot game in your browser: pull back the wooden slingshot and bring down five crumbling castles guarded by slime goblins. Works with mouse, keyboard and touch.">
+  <meta name="theme-color" content="#0f172a">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Sapan: slingshot castle game">
+  <meta property="og:description" content="Pull back the slingshot and bring down five crumbling castles guarded by slime goblins. Free, open source, plays in the browser.">
+  <meta property="og:url" content="https://celaldrg.github.io/sapan/">
+  <meta property="og:image" content="https://celaldrg.github.io/sapan/docs/screenshot.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f172a'/%3E%3Cpath d='M32 58V38M32 38L18 12M32 38L46 12' stroke='%23b7793f' stroke-width='7' stroke-linecap='round' fill='none'/%3E%3Cpath d='M18 14L32 26L46 14' stroke='%23ef4444' stroke-width='3.5' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='32' cy='26' r='7' fill='%2394a3b8'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="vendor/matter.min.js"></script>
+  <script type="module" src="src/main.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <h1 class="brand">
+      <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <path d="M32 58V38M32 38L18 12M32 38L46 12" stroke="#b7793f" stroke-width="7" stroke-linecap="round" fill="none"/>
+        <path d="M18 14L32 26L46 14" stroke="#ef4444" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+        <circle cx="32" cy="26" r="7" fill="#94a3b8"/>
+      </svg>
+      <span data-i18n="title">Sapan</span>
+    </h1>
+    <nav class="topbar-actions">
+      <button id="btn-new" class="btn" type="button" data-i18n="newGame" data-i18n-label="newGameLabel">New game</button>
+      <button id="btn-mute" class="btn btn-icon" type="button" aria-pressed="false" data-i18n-label="mute">
+        <svg class="icon icon-sound" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        <svg class="icon icon-muted" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <button id="btn-lang" class="btn btn-icon btn-lang" type="button" data-i18n="langToggle" data-i18n-label="langToggleLabel">TR</button>
+    </nav>
+  </header>
+
+  <main class="stage" id="stage">
+    <canvas id="game" class="play" tabindex="0" role="img" data-i18n-label="canvasLabel"></canvas>
+
+    <div class="hud" id="hud">
+      <div class="pill pill-level"><strong id="hud-level">Level 1</strong><span class="pill-sub" id="hud-level-name"></span></div>
+      <div class="pill pill-ammo" id="hud-ammo" role="img"></div>
+      <div class="pill"><span class="pill-sub" data-i18n="score">Score</span><strong id="hud-score">0</strong></div>
+      <div class="pill pill-goblins" id="hud-goblins" role="img"><span class="goblin-dot" aria-hidden="true"></span><strong id="hud-goblins-count">0</strong></div>
+      <button id="btn-restart" class="btn btn-icon hud-restart" type="button" data-i18n-label="restartLabel">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 12a8 8 0 1 1-2.34-5.66" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M20 4v5h-5" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="btn-text" data-i18n="restart">Restart</span>
+      </button>
+    </div>
+
+    <p class="hint" id="hint">
+      <span data-i18n="hintTouch">Drag back to aim, release to fire</span>
+      <span class="hint-keys" data-i18n="hintKeys"></span>
+    </p>
+
+    <section class="overlay" id="overlay-levels" aria-labelledby="levels-title" role="dialog">
+      <div class="card">
+        <div class="card-head">
+          <h2 id="levels-title" data-i18n="chooseLevel">Choose a level</h2>
+          <button id="btn-close-levels" class="btn btn-icon" type="button" data-i18n-label="close">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <p class="muted" id="levels-total"></p>
+        <div class="level-grid" id="level-grid"></div>
+      </div>
+    </section>
+
+    <section class="overlay" id="overlay-result" aria-labelledby="result-title" role="dialog">
+      <div class="card card-result">
+        <h2 id="result-title"></h2>
+        <div class="stars" id="result-stars" role="img">
+          <span class="star" aria-hidden="true">★</span><span class="star" aria-hidden="true">★</span><span class="star" aria-hidden="true">★</span>
+        </div>
+        <p class="result-score" id="result-score"></p>
+        <p class="muted" id="result-best"></p>
+        <div class="actions">
+          <button id="btn-levels" class="btn" type="button" data-i18n="levels">Levels</button>
+          <button id="btn-retry" class="btn" type="button" data-i18n="retry">Retry</button>
+          <button id="btn-next" class="btn btn-primary" type="button" data-i18n="next">Next level</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <a href="https://github.com/celaldrg/sapan" data-i18n="footer">MIT · Source on GitHub</a>
+  </footer>
+</body>
+</html>
