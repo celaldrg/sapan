@@ -1,6 +1,6 @@
 # Sapan - pull back the slingshot and bring down castles full of slime goblins
 
-[![tests](https://github.com/celaldrg/sapan/actions/workflows/test.yml/badge.svg)](https://github.com/celaldrg/sapan/actions/workflows/test.yml)
+[![tests: node --test](https://img.shields.io/badge/tests-node_----test-blue)](#tests)
 [![License: MIT](https://img.shields.io/badge/license-MIT-ef4444.svg)](LICENSE)
 
 **▶ Play now: https://celaldrg.github.io/sapan/**
